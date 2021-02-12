@@ -1,0 +1,8 @@
+plugins{
+	id 'java'
+	id 'application'
+}
+
+sourceSets.main.java.srcDirs = ['src']
+
+mainClassName = 'Main'
