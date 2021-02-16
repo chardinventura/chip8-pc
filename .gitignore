@@ -1,3 +1,7 @@
-/*
-!/src/
-!build.gradle
+*.gradle
+*.settings
+bin
+build
+roms
+*.classpath
+*.project
