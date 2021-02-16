@@ -13,7 +13,7 @@ public class Window extends JFrame implements KeyListener{
 	};
 
 	public Window() {
-		setSize(640, 320);
+		setSize(650, 350);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		addKeyListener(this);
