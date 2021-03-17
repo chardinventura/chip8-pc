@@ -6,10 +6,10 @@ public class Window extends JFrame implements KeyListener{
 	private static final long serialVersionUID = 1L;
 
 	private short[][] keys = {
-		{150, 0}, {91, 0}, {161, 0}, {162, 0}, // 1, 2, 3, C
-		{59, 0}, {44, 0}, {46, 0}, {80, 0},    // 4, 5, 6, D
-		{65, 0}, {79, 0}, {69, 0}, {85, 0},    // 7, 8, 9, E
-		{222, 0}, {81, 0}, {74, 0}, {75, 0},   // A, 0, B, F
+		{KeyEvent.VK_1, 0}, {KeyEvent.VK_2, 0}, {KeyEvent.VK_3, 0}, {KeyEvent.VK_4, 0}, // 1, 2, 3, C
+		{KeyEvent.VK_Q, 0}, {KeyEvent.VK_W, 0}, {KeyEvent.VK_E, 0}, {KeyEvent.VK_R, 0},    // 4, 5, 6, D
+		{KeyEvent.VK_A, 0}, {KeyEvent.VK_S, 0}, {KeyEvent.VK_D, 0}, {KeyEvent.VK_F, 0},    // 7, 8, 9, E
+		{KeyEvent.VK_Z, 0}, {KeyEvent.VK_X, 0}, {KeyEvent.VK_C, 0}, {KeyEvent.VK_V, 0},   // A, 0, B, F
 	};
 
 	public Window() {
