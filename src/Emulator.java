@@ -20,24 +20,24 @@ public class Emulator {
 	private boolean[] pixels = new boolean[2048];
 	private Window window;
 	private Panel panel;
+	private byte fps;
 
-	private short[] sprites = {
-		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-		0x20, 0x60, 0x20, 0x20, 0x70, // 1
-		0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-		0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-		0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-		0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-		0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-		0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-		0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-		0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-		0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-		0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-		0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-		0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-		0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-		0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+	private short[] sprites = { 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+			0x20, 0x60, 0x20, 0x20, 0x70, // 1
+			0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+			0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+			0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+			0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+			0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+			0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+			0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+			0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+			0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+			0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+			0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+			0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+			0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+			0xF0, 0x80, 0xF0, 0x80, 0x80, // F
 	};
 
 	public void init() {
@@ -56,18 +56,19 @@ public class Emulator {
 		window.add(panel);
 		panel.setPixels(pixels);
 		panel.setPixelSize((byte) 10);
+		fps = 40;
 	}
 
 	public void load_memory(String rom) throws IOException {
 
-		try(InputStream inputStream = new FileInputStream(rom)) {
+		try (InputStream inputStream = new FileInputStream(rom)) {
 
 			short b;
 
-			for(int i = 0; (b = (short) inputStream.read()) != -1; i++)
+			for (int i = 0; (b = (short) inputStream.read()) != -1; i++)
 				memory[pc + i] = b;
 
-		}catch(IOException e) {
+		} catch (IOException e) {
 			throw e;
 		}
 	}
@@ -83,18 +84,17 @@ public class Emulator {
 
 		pc = (char) ((pc + 2) & 0xFFF);
 
-		switch(opcode & 0xF000) {
+		switch (opcode & 0xF000) {
 			case 0x0000:
-				switch(opcode & 0xFF) {
+				switch (opcode & 0xFF) {
 					// CLS
 					case 0xE0:
 						Arrays.fill(pixels, false);
 						panel.repaint();
-						System.exit(4);
 						break;
 					case 0xEE:
 						// RET
-						if(sp > 0)
+						if (sp > 0)
 							pc = stack[--sp];
 						break;
 				}
@@ -105,23 +105,23 @@ public class Emulator {
 				break;
 			// CALL addr
 			case 0x2000:
-				if(sp < (STACK_SIZE - 1))
+				if (sp < (STACK_SIZE - 1))
 					stack[sp++] = pc;
 				pc = (char) nnn;
 				break;
 			// SE Vx, byte
 			case 0x3000:
-				if(v[x] == kk)
+				if (v[x] == kk)
 					pc += 2;
 				break;
 			// SNE Vx, byte
 			case 0x4000:
-				if(v[x] != kk)
+				if (v[x] != kk)
 					pc += 2;
 				break;
 			// SE Vx, Vy
 			case 0x5000:
-				if(v[x] == v[y])
+				if (v[x] == v[y])
 					pc += 2;
 				break;
 			// LD Vx, kk
@@ -133,7 +133,7 @@ public class Emulator {
 				v[x] = (short) ((v[x] + kk) & 0xFF);
 				break;
 			case 0x8000:
-				switch(opcode & 0xF) {
+				switch (opcode & 0xF) {
 					// LD Vx, Vy
 					case 0x0:
 						v[x] = v[y];
@@ -169,7 +169,7 @@ public class Emulator {
 					case 0x7:
 						v[0xF] = (short) (v[y] > v[x] ? 1 : 0);
 						v[x] = (short) ((v[y] - v[x]) & 0xFF);
-					// SHL Vx {, Vy}
+						// SHL Vx {, Vy}
 					case 0xE:
 						v[0xF] = (short) ((v[x] >> 0x7) == 1 ? 1 : 0);
 						v[x] = (short) ((v[x] << 0x1) & 0xFF);
@@ -182,7 +182,7 @@ public class Emulator {
 				break;
 			// SNE Vx, Vy
 			case 0x9000:
-				if(v[x] != v[y])
+				if (v[x] != v[y])
 					pc += 2;
 				break;
 			// LD I, addr
@@ -195,7 +195,7 @@ public class Emulator {
 				break;
 			// RND Vx, byte
 			case 0xC000:
-				v[x] = (short) ((int)(Math.random() * 10) & kk);
+				v[x] = (short) ((int) (Math.random() * 10) & kk);
 				break;
 			// DRW Vx, Vy, nibble
 			case 0xD000:
@@ -204,32 +204,27 @@ public class Emulator {
 					for (byte j = 0; j < 8; j++) {
 						byte px = (byte) ((v[x] + j) & 0x3F);
 						byte py = (byte) ((v[y] + i) & 0x1F);
-						pixels[0x40 * py + px] ^= ((sprite >> (7-j)) & 0x1) != 0;
+						pixels[0x40 * py + px] ^= ((sprite >> (7 - j)) & 0x1) != 0;
 					}
 				}
-				try{
-					Thread.sleep(1000/60);
-				}catch(InterruptedException e){
-
-				}
-				panel.repaint();
+				delayFps();
 				break;
 			case 0xE000:
-				switch(opcode & 0xFF) {
+				switch (opcode & 0xFF) {
 					// SKP Vx
 					case 0x9E:
-						if(window.getKeys()[v[x]][1] == 1)
+						if (window.getKeys()[v[x]][1] == 1)
 							pc += 2;
 						break;
 					// SKNP Vx
 					case 0xA1:
-						if(window.getKeys()[v[x]][1] != 1)
+						if (window.getKeys()[v[x]][1] != 1)
 							pc += 2;
 						break;
 				}
 				break;
 			case 0xF000:
-				switch(opcode & 0xFF) {
+				switch (opcode & 0xFF) {
 					// LD Vx, DT
 					case 0x07:
 						v[x] = delayTimer;
@@ -237,7 +232,6 @@ public class Emulator {
 					// LD Vx, k
 					case 0x0A:
 						// TODO
-						System.exit(2);
 						break;
 					// LD DT, Vx
 					case 0x15:
@@ -269,7 +263,7 @@ public class Emulator {
 					// LD Vx, [I]
 					case 0x65:
 						for (byte i = 0; i <= x; i++)
-							 v[i] = memory[this.i + i];
+							v[i] = memory[this.i + i];
 						break;
 				}
 				break;
@@ -279,9 +273,19 @@ public class Emulator {
 				break;
 		}
 
-		if(delayTimer != 0)
+		if (delayTimer != 0)
 			delayTimer--;
-		if(soundTimer != 0)
+		if (soundTimer != 0)
 			soundTimer--;
+	}
+
+	public void delayFps() {
+
+		try {
+			Thread.sleep(1000 / fps);
+			panel.repaint();
+		} catch (InterruptedException e) {
+
+		}
 	}
 }
