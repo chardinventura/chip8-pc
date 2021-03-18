@@ -4,4 +4,3 @@ To load a rom and run the emulator, you must pass by argument the path of the ro
 # Preview
 ![](docs/screenshot1.png)
 ![](docs/screenshot2.png)
-
